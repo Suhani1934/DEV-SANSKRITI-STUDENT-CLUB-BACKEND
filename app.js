@@ -1,16 +1,16 @@
-
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config();
-
 const app = express();
+
+const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
 
 // ✅ Middleware
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL],
+    origin: [allowedOrigin],
     credentials: true,
   })
 );
@@ -41,7 +41,7 @@ app.use('/api/enrollment-requests', require('./routes/enrollmentRequestRoutes'))
 
 // ✅ Health check (useful for Render)
 app.get('/', (req, res) => {
-  res.send('🎉 API is running');
+  res.send('Dev Sanskriti Student Club API is running');
 });
 
 // ✅ Start Server
