@@ -5,15 +5,24 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 
-console.log('✅ Using hardcoded CORS origin');
+const allowedOrigin = 'https://dev-sanskriti-student-club-frontend.vercel.app';
 
-// ✅ Middleware
-app.use(
-  cors({
-    origin: 'https://dev-sanskriti-student-club-frontend.vercel.app',
-    credentials: true,
-  })
-);
+console.log('✅ Using manual CORS with hardcoded origin');
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', allowedOrigin);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
+
 app.options('*', cors());
 
 app.use(express.json());
