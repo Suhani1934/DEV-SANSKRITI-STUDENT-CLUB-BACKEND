@@ -11,7 +11,15 @@ console.log('🚨 ALLOWED ORIGIN:', allowedOrigin);
 // ✅ Middleware
 app.use(
   cors({
-    origin: [allowedOrigin],
+    origin: function (origin, callback) {
+      // Allow non-browser requests like curl or Postman
+      if (!origin) return callback(null, true);
+
+      if (origin === allowedOrigin) {
+        return callback(null, true);
+      }
+      return callback(new Error('CORS policy: Not allowed by CORS'));
+    },
     credentials: true,
   })
 );
