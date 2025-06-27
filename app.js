@@ -1,9 +1,9 @@
-require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const path = require('path');
 const app = express();
+require('dotenv').config();
 
 const allowedOrigin = 'https://dev-sanskriti-student-club-frontend.vercel.app';
 
