@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 
 const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
+console.log('🚨 ALLOWED ORIGIN:', allowedOrigin);
 
 // ✅ Middleware
 app.use(
