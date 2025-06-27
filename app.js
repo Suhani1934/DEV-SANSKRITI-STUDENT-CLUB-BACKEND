@@ -9,21 +9,21 @@ const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
 console.log('🚨 ALLOWED ORIGIN:', allowedOrigin);
 
 // ✅ Middleware
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow non-browser requests like curl or Postman
-      if (!origin) return callback(null, true);
-
-      if (origin === allowedOrigin) {
-        return callback(null, true);
-      }
-      return callback(new Error('CORS policy: Not allowed by CORS'));
-    },
-    credentials: true,
-  })
-);
-
+app.use((req, res, next) => {
+  const requestOrigin = req.headers.origin;
+  if (!requestOrigin || requestOrigin === allowedOrigin) {
+    res.header('Access-Control-Allow-Origin', allowedOrigin);
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+    return next();
+  }
+  // Optionally: reject requests from disallowed origins
+  res.status(403).send('CORS policy: Origin not allowed');
+});
 
 app.options('*', cors());
 
