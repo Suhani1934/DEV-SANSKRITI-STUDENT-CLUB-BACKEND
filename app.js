@@ -5,26 +5,15 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 
-const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
-console.log('🚨 ALLOWED ORIGIN:', allowedOrigin);
+console.log('✅ Using hardcoded CORS origin');
 
 // ✅ Middleware
-app.use((req, res, next) => {
-  const requestOrigin = req.headers.origin;
-  if (!requestOrigin || requestOrigin === allowedOrigin) {
-    res.header('Access-Control-Allow-Origin', allowedOrigin);
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(204);
-    }
-    return next();
-  }
-  // Optionally: reject requests from disallowed origins
-  res.status(403).send('CORS policy: Origin not allowed');
-});
-
+app.use(
+  cors({
+    origin: 'https://dev-sanskriti-student-club-frontend.vercel.app',
+    credentials: true,
+  })
+);
 app.options('*', cors());
 
 app.use(express.json());
