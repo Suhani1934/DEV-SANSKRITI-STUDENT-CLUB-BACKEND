@@ -4,63 +4,90 @@ const path = require('path');
 
 exports.createClub = async (req, res) => {
   try {
-    const { name, description, category } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : '';
+    const { name, description } = req.body;
+    let categories = [];
 
-    if (!name || !description || !category || !req.file) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (req.body.categories) {
+      try {
+        categories = JSON.parse(req.body.categories);
+      } catch (err) {
+        console.error('Failed to parse categories JSON:', err);
+        return res.status(400).json({ error: 'Invalid categories format' });
+      }
     }
 
-    const club = new Club({ name, description, category, image: `/uploads/${req.file.filename}`, createdBy: req.user._id });
+    const clubData = {
+      name,
+      description,
+      categories,
+    };
 
+    if (req.file) {
+      clubData.image = req.file.filename;
+    }
+
+    const club = new Club(clubData);
     await club.save();
-    res.status(201).json(club);
-  } catch (err) {
-    console.error('[ERROR IN CLUB CREATE]:', err);
-    res.status(500).json({ error: 'Failed to create club' });
-  }
-}
 
-exports.getAllClubs = async (req, res) => {
-  try {
-    const clubs = await Club.find().populate('createdBy', 'name');
-    res.json(clubs);
+    res.status(201).json({ message: 'Club created successfully', club });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch clubs' });
+    console.error('[CREATE CLUB ERROR]', err);
+    res.status(500).json({ error: 'Server error while creating club' });
   }
 };
 
 
-exports.updateClub = async (req, res) => {
-  const { id } = req.params;
-  const { name, description, category } = req.body;
-
+exports.getAllClubs = async (req, res) => {
   try {
-    const club = await Club.findById(id);
+    const clubs = await Club.find();
+    res.json(clubs);
+  } catch (err) {
+    console.error('[GET CLUBS ERROR]', err);
+    res.status(500).json({ error: 'Failed to fetch clubs' });
+  }
+};
+
+exports.updateClub = async (req, res) => {
+  try {
+    const clubId = req.params.id;
+    const { name, description, categories } = req.body;
+
+    const club = await Club.findById(clubId);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
     // Update fields
     club.name = name || club.name;
     club.description = description || club.description;
-    club.category = category || club.category;
 
-    // If a new image is uploaded, update it
-    if (req.file) {
-      // Delete old image
-      if (club.image) {
-        const oldImagePath = path.join(__dirname, '../', club.image);
-        if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
+    // Categories should come as a JSON string (as you’re sending in the frontend)
+    if (categories) {
+      const parsedCategories = Array.isArray(categories)
+        ? categories
+        : JSON.parse(categories);
+
+      if (!Array.isArray(parsedCategories) || parsedCategories.length === 0) {
+        return res.status(400).json({ error: 'Categories must be a non-empty array' });
       }
 
-      club.image = req.file.path;
+      club.categories = parsedCategories;
+    }
+
+    // If a new image was uploaded, update it
+    if (req.file) {
+      // Delete old image from uploads folder if it exists
+      if (club.image) {
+        const oldImagePath = path.join('uploads', club.image);
+        if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
+      }
+      club.image = req.file.filename;
     }
 
     await club.save();
 
-    res.status(200).json({ message: 'Club updated successfully', club });
-  } catch (error) {
-    console.error('Update error:', error);
-    res.status(500).json({ error: 'Failed to update club' });
+    res.json({ message: 'Club updated successfully', club });
+  } catch (err) {
+    console.error('[UPDATE CLUB ERROR]', err);
+    res.status(500).json({ error: 'Server error updating club' });
   }
 };
 

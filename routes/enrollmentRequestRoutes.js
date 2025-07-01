@@ -1,10 +1,10 @@
 const express = require('express');
-const { sendRequest, getAllRequests, updateRequestStatus, getStudentRequests } = require('../controllers/enrollmentRequestController');
+const { createEnrollmentRequest, getAllRequests, updateEnrollmentRequestStatus, getStudentRequests } = require('../controllers/enrollmentRequestController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Student sends request
-router.post('/:clubId', protect, sendRequest);
+router.post('/:clubId', protect, createEnrollmentRequest);
 
 // Get requests for logged-in student
 router.get('/my-requests', protect, getStudentRequests);
@@ -14,6 +14,6 @@ router.get('/my-requests', protect, getStudentRequests);
 router.get('/', protect, adminOnly, getAllRequests);
 
 // Admin approves/rejects
-router.put('/:requestId', protect, adminOnly, updateRequestStatus);
+router.put('/:requestId', protect, adminOnly, updateEnrollmentRequestStatus);
 
 module.exports = router;
