@@ -16,8 +16,6 @@ exports.getCurrentUser = async (req, res) => {
   }
 };
 
-
-
 // Get all students (admin only)
 exports.getAllStudents = async (req, res) => {
   try {

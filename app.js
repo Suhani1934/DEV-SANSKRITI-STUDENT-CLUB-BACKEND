@@ -44,6 +44,10 @@ app.use('/api/clubs', require('./routes/clubRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/enroll', require('./routes/enrollmentRoutes'));
 app.use('/api/enrollment-requests', require('./routes/enrollmentRequestRoutes'));
+app.use('/api/club-details', require('./routes/clubDetails'));
+app.use('/api/feedbacks',require('./routes/feedbackRoutes'))
+app.use('/api/events', require('./routes/eventRoutes'));
+
 
 // Health check (useful for Render)
 app.get('/', (req, res) => {

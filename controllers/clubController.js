@@ -1,4 +1,6 @@
-const Club = require('../models/Club');
+const Club = require('../models/Club.js')
+const ClubDetail = require('../models/ClubDetail.js');
+const EnrollmentRequest = require('../models/EnrollmentRequest.js')
 const fs = require('fs');
 const path = require('path');
 
@@ -33,6 +35,53 @@ exports.createClub = async (req, res) => {
   } catch (err) {
     console.error('[CREATE CLUB ERROR]', err);
     res.status(500).json({ error: 'Server error while creating club' });
+  }
+};
+
+exports.getClubById = async (req, res) => {
+  try {
+    const club = await ClubDetail.findById(req.params.clubId)
+    .populate('club')
+    .populate('coordinator')
+    .populate('members.student');
+      
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    const acceptedRequests = await EnrollmentRequest.find({
+      club: club._id,
+      status: 'accepted',
+    }).populate('student', 'name email');
+
+    const members = acceptedRequests.map((req) => ({
+      student: req.student,
+      category: req.category,
+    }));
+
+    const responseData = {
+      _id: club._id,
+      name: club.name,
+      description: club.description,
+      categories: club.categories,
+      coordinator: club.coordinator,
+      members,
+    };
+
+    res.status(200).json(responseData);
+  } catch (err) {
+    console.error('[GET CLUB BY ID ERROR]', err);
+    res.status(500).json({ error: 'Failed to fetch club' });
+  }
+};
+
+// GET /api/clubs/:id/members
+exports.getClubMembers = async (req, res) => {
+  try {
+    const clubId = req.params.id;
+    const students = await User.find({ 'enrolledClubs.club': clubId }).select('name email').lean();
+    res.json(students);
+  } catch (err) {
+    console.error('[GET CLUB MEMBERS ERROR]', err);
+    res.status(500).json({ error: 'Failed to fetch members' });
   }
 };
 
