@@ -4,21 +4,31 @@ const Testimonial = require("../models/Testimonial");
 exports.submitTestimonial = async (req, res) => {
   try {
     const { name, course, text } = req.body;
-    const testimonial = new Testimonial({ name, course, text });
 
-    if (req.file) testimonial.photo = `/uploads/${req.file.filename}`;
-    await testimonial.save();
-    res.status(200).json({ message: "Testimonial submitted, pending approval." });
+    const newTestimonial = new Testimonial({
+      name,
+      course,
+      text,
+      photo: req.file ? req.file.path : undefined,
+      approved: false, 
+    });
+
+    await newTestimonial.save();
+    res
+      .status(201)
+      .json({
+        message: "Testimonial submitted successfully, pending approval!",
+      });
   } catch (err) {
-    console.error("[SUBMIT TESTIMONIAL ERROR]", err);
-    res.status(500).json({ error: "Failed to submit testimonial." });
+    console.error("[CREATE TESTIMONIAL ERROR]", err);
+    res.status(500).json({ error: "Failed to submit testimonial" });
   }
 };
 
 // Admin gets pending testimonials
 exports.getPendingTestimonials = async (req, res) => {
   try {
-    const pending = await Testimonial.find({ status: 'pending' });
+    const pending = await Testimonial.find({ status: "pending" });
     res.json(pending);
   } catch (err) {
     console.error("[GET PENDING TESTIMONIALS ERROR]", err);
@@ -30,7 +40,7 @@ exports.getPendingTestimonials = async (req, res) => {
 exports.approveTestimonial = async (req, res) => {
   try {
     const { id } = req.params;
-    await Testimonial.findByIdAndUpdate(id, { status: 'approved' });
+    await Testimonial.findByIdAndUpdate(id, { status: "approved" });
     res.json({ message: "Testimonial approved." });
   } catch (err) {
     console.error("[APPROVE TESTIMONIAL ERROR]", err);
@@ -41,7 +51,7 @@ exports.approveTestimonial = async (req, res) => {
 // Get approved testimonials for homepage
 exports.getApprovedTestimonials = async (req, res) => {
   try {
-    const approved = await Testimonial.find({ status: 'approved' });
+    const approved = await Testimonial.find({ status: "approved" });
     res.json(approved);
   } catch (err) {
     console.error("[GET APPROVED TESTIMONIALS ERROR]", err);
