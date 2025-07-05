@@ -9,7 +9,7 @@ exports.submitTestimonial = async (req, res) => {
       name,
       course,
       text,
-      photo: req.file ? req.file.path : undefined,
+      photo: req.file ? req.file.path : "https://cdn0.iconfinder.com/data/icons/kameleon-free-pack-rounded/110/Student-3-512.png",
       approved: false, 
     });
 
