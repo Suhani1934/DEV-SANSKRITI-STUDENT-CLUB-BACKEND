@@ -47,6 +47,7 @@ app.use('/api/enrollment-requests', require('./routes/enrollmentRequestRoutes'))
 app.use('/api/club-details', require('./routes/clubDetails'));
 app.use('/api/feedbacks',require('./routes/feedbackRoutes'))
 app.use('/api/events', require('./routes/eventRoutes'));
+app.use('/api/testimonials',require('./routes/testimonialRoutes'));
 
 
 // Health check (useful for Render)
