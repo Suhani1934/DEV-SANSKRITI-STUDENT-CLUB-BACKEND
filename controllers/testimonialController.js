@@ -3,8 +3,10 @@ const Testimonial = require("../models/Testimonial");
 // Student submits testimonial
 exports.submitTestimonial = async (req, res) => {
   try {
-    const { name, course, text, photo } = req.body;
-    const testimonial = new Testimonial({ name, course, text, photo });
+    const { name, course, text } = req.body;
+    const testimonial = new Testimonial({ name, course, text });
+
+    if (req.file) testimonial.photo = `/uploads/${req.file.filename}`;
     await testimonial.save();
     res.status(200).json({ message: "Testimonial submitted, pending approval." });
   } catch (err) {
