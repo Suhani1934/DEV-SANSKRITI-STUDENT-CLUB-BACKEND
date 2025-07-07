@@ -4,35 +4,28 @@ const EnrollmentRequest = require('../models/EnrollmentRequest.js')
 
 exports.createClub = async (req, res) => {
   try {
-    const { name, description } = req.body;
-    let categories = [];
+    const { name, description, categories } = req.body;
+    const categoriesArray = JSON.parse(categories);
 
-    if (req.body.categories) {
-      try {
-        categories = JSON.parse(req.body.categories);
-      } catch (err) {
-        console.error('Failed to parse categories JSON:', err);
-        return res.status(400).json({ error: 'Invalid categories format' });
-      }
+    // If multer uploaded image (with Cloudinary storage), the file URL is in req.file.path
+    let imageUrl = '';
+    if (req.file) {
+      imageUrl = req.file.path;
     }
 
-    const clubData = {
+    const newClub = new Club({
       name,
       description,
-      categories,
-    };
+      categories: categoriesArray,
+      image: imageUrl,
+      createdBy: req.user._id, 
+    });
 
-    if (req.file && req.file.path) {
-      clubData.image = req.file.filename;
-    }
-
-    const club = new Club(clubData);
-    await club.save();
-
-    res.status(201).json({ message: 'Club created successfully', club });
+    await newClub.save();
+    res.status(201).json({ message: 'Club created successfully', club: newClub });
   } catch (err) {
     console.error('[CREATE CLUB ERROR]', err);
-    res.status(500).json({ error: 'Server error while creating club' });
+    res.status(500).json({ error: 'Failed to create club' });
   }
 };
 
