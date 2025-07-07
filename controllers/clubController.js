@@ -1,8 +1,6 @@
 const Club = require('../models/Club.js')
 const ClubDetail = require('../models/ClubDetail.js');
 const EnrollmentRequest = require('../models/EnrollmentRequest.js')
-const fs = require('fs');
-const path = require('path');
 
 exports.createClub = async (req, res) => {
   try {
@@ -24,7 +22,7 @@ exports.createClub = async (req, res) => {
       categories,
     };
 
-    if (req.file) {
+    if (req.file && req.file.path) {
       clubData.image = req.file.filename;
     }
 
@@ -122,13 +120,8 @@ exports.updateClub = async (req, res) => {
     }
 
     // If a new image was uploaded, update it
-    if (req.file) {
-      // Delete old image from uploads folder if it exists
-      if (club.image) {
-        const oldImagePath = path.join('uploads', club.image);
-        if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
-      }
-      club.image = req.file.filename;
+   if (req.file && req.file.path) {
+      club.image = req.file.path;
     }
 
     await club.save();

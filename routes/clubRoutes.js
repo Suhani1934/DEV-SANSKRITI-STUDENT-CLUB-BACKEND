@@ -1,7 +1,10 @@
 const express = require('express');
 const { createClub,getClubById,getClubMembers, getAllClubs, updateClub, deleteClub } = require('../controllers/clubController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
+// const upload = require('../middleware/uploadMiddleware');
+const { storage } = require("../config/cloudinary");
+const multer = require("multer");
+const upload = multer({ storage });
 
 const router = express.Router();
 
