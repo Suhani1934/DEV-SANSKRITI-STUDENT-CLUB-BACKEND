@@ -2,7 +2,6 @@ const Club = require('../models/Club');
 const ClubDetail = require('../models/ClubDetail');
 const EnrollmentRequest = require('../models/EnrollmentRequest');
 const User = require('../models/User');
-const mongoose = require('mongoose');
 
 // Create or update club detail
 exports.createOrUpdateClubDetail = async (req, res) => {
