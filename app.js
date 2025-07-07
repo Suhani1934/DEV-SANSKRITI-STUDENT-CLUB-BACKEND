@@ -48,6 +48,7 @@ app.use('/api/club-details', require('./routes/clubDetails'));
 app.use('/api/feedbacks',require('./routes/feedbackRoutes'))
 app.use('/api/events', require('./routes/eventRoutes'));
 app.use('/api/testimonials',require('./routes/testimonialRoutes'));
+app.use('/api/gallery',require('./routes/galleryRoutes'))
 
 
 // Health check (useful for Render)
