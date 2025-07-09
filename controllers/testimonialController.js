@@ -12,7 +12,6 @@ exports.submitTestimonial = async (req, res) => {
       photo: req.file
         ? req.file.path
         : "https://cdn0.iconfinder.com/data/icons/kameleon-free-pack-rounded/110/Student-3-512.png",
-      approved: false,
     });
 
     await newTestimonial.save();
@@ -25,16 +24,6 @@ exports.submitTestimonial = async (req, res) => {
   }
 };
 
-exports.getApprovedTestimonials = async (req, res) => {
-  try {
-    const testimonials = await Testimonial.find({ status: "approved" });
-    res.status(200).json(testimonials);
-  } catch (err) {
-    console.error("[GET APPROVED TESTIMONIALS ERROR]", err);
-    res.status(500).json({ error: "Failed to fetch approved testimonials" });
-  }
-};
-
 // Admin gets pending testimonials
 exports.getPendingTestimonials = async (req, res) => {
   try {
@@ -43,6 +32,17 @@ exports.getPendingTestimonials = async (req, res) => {
   } catch (err) {
     console.error("[GET PENDING TESTIMONIALS ERROR]", err);
     res.status(500).json({ error: "Failed to fetch testimonials." });
+  }
+};
+
+// Admin gets approved testimonials (frontend was throwing 404)
+exports.getApprovedTestimonials = async (req, res) => {
+  try {
+    const approved = await Testimonial.find({ status: "approved" });
+    res.status(200).json(approved);
+  } catch (err) {
+    console.error("[GET APPROVED TESTIMONIALS ERROR]", err);
+    res.status(500).json({ error: "Failed to fetch approved testimonials" });
   }
 };
 
@@ -81,12 +81,12 @@ exports.updateTestimonial = async (req, res) => {
   }
 };
 
-// Cancel testimonial (update status)
-// controllers/testimonialController.js
+// Cancel testimonial
 exports.cancelTestimonial = async (req, res) => {
   try {
     const testimonial = await Testimonial.findById(req.params.id);
-    if (!testimonial) return res.status(404).json({ error: "Testimonial not found" });
+    if (!testimonial)
+      return res.status(404).json({ error: "Testimonial not found" });
 
     testimonial.status = "cancelled";
     await testimonial.save();
@@ -98,8 +98,7 @@ exports.cancelTestimonial = async (req, res) => {
   }
 };
 
-
-// Get all testimonials (for admin)
+// Get all testimonials
 exports.getAllTestimonials = async (req, res) => {
   try {
     const testimonials = await Testimonial.find().sort({ createdAt: -1 });
@@ -109,4 +108,3 @@ exports.getAllTestimonials = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch testimonials" });
   }
 };
-
