@@ -25,6 +25,16 @@ exports.submitTestimonial = async (req, res) => {
   }
 };
 
+exports.getApprovedTestimonials = async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find({ status: "approved" });
+    res.status(200).json(testimonials);
+  } catch (err) {
+    console.error("[GET APPROVED TESTIMONIALS ERROR]", err);
+    res.status(500).json({ error: "Failed to fetch approved testimonials" });
+  }
+};
+
 // Admin gets pending testimonials
 exports.getPendingTestimonials = async (req, res) => {
   try {
@@ -71,33 +81,32 @@ exports.updateTestimonial = async (req, res) => {
   }
 };
 
-// Reject/delete testimonial
-exports.deleteTestimonial = async (req, res) => {
+// Cancel testimonial (update status)
+// controllers/testimonialController.js
+exports.cancelTestimonial = async (req, res) => {
   try {
-    const { id } = req.params;
+    const testimonial = await Testimonial.findById(req.params.id);
+    if (!testimonial) return res.status(404).json({ error: "Testimonial not found" });
 
-    const testimonial = await Testimonial.findById(id);
-    if (!testimonial) {
-      return res.status(404).json({ error: "Testimonial not found" });
-    }
+    testimonial.status = "cancelled";
+    await testimonial.save();
 
-    await testimonial.deleteOne();
-
-    res.status(200).json({ message: "Testimonial rejected and deleted successfully" });
+    res.status(200).json({ message: "Testimonial canceled successfully" });
   } catch (err) {
-    console.error("[DELETE TESTIMONIAL ERROR]", err);
-    res.status(500).json({ error: "Failed to delete testimonial" });
+    console.error("[CANCEL TESTIMONIAL ERROR]", err);
+    res.status(500).json({ error: "Failed to cancel testimonial" });
   }
 };
 
 
-// Get approved testimonials for homepage
-exports.getApprovedTestimonials = async (req, res) => {
+// Get all testimonials (for admin)
+exports.getAllTestimonials = async (req, res) => {
   try {
-    const approved = await Testimonial.find({ status: "approved" });
-    res.json(approved);
+    const testimonials = await Testimonial.find().sort({ createdAt: -1 });
+    res.status(200).json(testimonials);
   } catch (err) {
-    console.error("[GET APPROVED TESTIMONIALS ERROR]", err);
-    res.status(500).json({ error: "Failed to fetch testimonials." });
+    console.error("[GET ALL TESTIMONIALS ERROR]", err);
+    res.status(500).json({ error: "Failed to fetch testimonials" });
   }
 };
+
