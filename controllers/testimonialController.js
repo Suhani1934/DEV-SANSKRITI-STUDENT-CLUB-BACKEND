@@ -11,7 +11,7 @@ exports.submitTestimonial = async (req, res) => {
       text,
       photo: req.file
         ? req.file.path
-        : "https://cdn0.iconfinder.com/data/icons/kameleon-free-pack-rounded/110/Student-3-512.png",
+        : "https://res.cloudinary.com/dkgn0gsiv/image/upload/v1752213864/Student_zi2zkz.webp",
     });
 
     await newTestimonial.save();
