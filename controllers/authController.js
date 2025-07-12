@@ -10,7 +10,6 @@ exports.getMe = async (req, res) => {
     }
 };
 
-
 exports.registerUser = async (req, res) => {
     const { name, email, phone, course, year, role, password, confirmPassword } = req.body;
 
@@ -27,6 +26,7 @@ exports.registerUser = async (req, res) => {
         if (existing) return res.status(400).json({ error: 'User already exists' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = new User({
             name,
             email,
@@ -60,7 +60,7 @@ exports.loginUser = async (req, res) => {
 
         res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role, } });
     } catch (err) {
-        console.error('❌ Login error:', err);
+        console.error('Login error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 };

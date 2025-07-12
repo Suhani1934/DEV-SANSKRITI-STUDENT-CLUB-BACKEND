@@ -50,6 +50,9 @@ app.use('/api/events', require('./routes/eventRoutes'));
 app.use('/api/testimonials',require('./routes/testimonialRoutes'));
 app.use('/api/gallery',require('./routes/galleryRoutes'))
 
+// admin routes
+app.use('/api/admin',require('./routes/adminRoutes'))
+
 
 // Health check (useful for Render)
 app.get('/', (req, res) => {
